@@ -10,9 +10,9 @@ namespace GTS.Tools {
     {
         Select, // for selecting nodes and edges
         Move, // for moving nodes and curving edges
-        Labeler, // for adding labels to nodes and edges
         NodeCreator, // for creating nodes
         EdgeCreator, // for creating/drawing edges
+        Trash, // deletes nodes and edges
     }
 
     public static class ToolManager

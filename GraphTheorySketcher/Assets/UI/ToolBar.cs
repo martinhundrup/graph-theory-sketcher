@@ -42,10 +42,6 @@ namespace GTS.UI {
             {
                 ToolManager.SetToolActive(Tool.Move);
             }
-            else if (Input.GetKeyDown(KeyCode.L))
-            {
-                ToolManager.SetToolActive(Tool.Labeler);
-            }
             else if (Input.GetKeyDown(KeyCode.N))
             {
                 ToolManager.SetToolActive(Tool.NodeCreator);
@@ -53,6 +49,10 @@ namespace GTS.UI {
             else if (Input.GetKeyDown(KeyCode.E))
             {
                 ToolManager.SetToolActive(Tool.EdgeCreator);
+            }
+            else if (Input.GetKeyDown(KeyCode.T))
+            {
+                ToolManager.SetToolActive(Tool.Trash);
             }
         }
 
