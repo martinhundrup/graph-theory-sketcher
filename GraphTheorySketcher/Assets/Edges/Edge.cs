@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 using GTS.Nodes;
-using System.Collections.Generic;
+using GTS.Tools;
 
 namespace GTS.Edges
 {
@@ -16,17 +17,38 @@ namespace GTS.Edges
         [SerializeField] private Node endNode;
 
         public Node StartNode => startNode;
-        public Node EndNode => endNode;
+        public Node EndNode   => endNode;
 
         private LineRenderer lr;
+        private EdgeCollider2D edgeCollider;
 
         new protected void Awake()
         {
             AllEdges.Add(this);
+
+            // Default edge thickness
             scale = 0.25f;
+
             base.Awake();
+
             lr = GetComponentInChildren<LineRenderer>();
-            lr.positionCount = 2;
+            if (lr == null)
+            {
+                Debug.LogWarning("Edge: No LineRenderer found in children.", this);
+            }
+            else
+            {
+                lr.positionCount = 2;
+                lr.useWorldSpace = true;
+            }
+
+            edgeCollider = GetComponent<EdgeCollider2D>();
+            if (edgeCollider == null)
+            {
+                edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
+            }
+
+            // Apply initial scale and positions
             SetScale(scale);
             UpdateLineImmediate();
         }
@@ -39,16 +61,36 @@ namespace GTS.Edges
             }
             if (endNode)
             {
-                startNode.Destroyed -= NodeDeleted;
+                endNode.Destroyed -= NodeDeleted;
             }
+
             AllEdges.Remove(this);
         }
 
-        override public void SetScale(float s)
+        private void OnMouseDown()
+        {
+            // Delete this edge when Trash tool is active
+            if (ToolManager.ActiveTool == Tool.Trash)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        public override void SetScale(float s)
         {
             base.SetScale(s);
-            lr.startWidth = s;
-            lr.endWidth   = s;
+
+            if (lr != null)
+            {
+                lr.startWidth = s;
+                lr.endWidth   = s;
+            }
+
+            if (edgeCollider != null)
+            {
+                // Thickness for hitbox; tweak as needed
+                edgeCollider.edgeRadius = s * 0.5f;
+            }
         }
 
         public void SetEndpoints(Node a, Node b)
@@ -59,39 +101,65 @@ namespace GTS.Edges
             }
             if (endNode)
             {
-                startNode.Destroyed -= NodeDeleted;
+                endNode.Destroyed -= NodeDeleted;
             }
 
             startNode = a;
-            endNode = b;
-            a.Destroyed += NodeDeleted;
-            b.Destroyed += NodeDeleted;
+            endNode   = b;
+
+            if (startNode != null)
+                startNode.Destroyed += NodeDeleted;
+            if (endNode != null)
+                endNode.Destroyed += NodeDeleted;
+
             UpdateLineImmediate();
         }
 
         private void NodeDeleted()
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
 
         private void Update()
         {
             if (startNode == null || endNode == null)
                 return;
-            
-            if (!startNode.IsDragging && !endNode.IsDragging) return; // don't update when not needed
-            lr.SetPosition(0, startNode.transform.position);
-            lr.SetPosition(1, endNode.transform.position);
+
+            // Only update when at least one node is moving
+            if (!startNode.IsDragging && !endNode.IsDragging)
+                return;
+
+            if (lr != null)
+            {
+                lr.SetPosition(0, startNode.transform.position);
+                lr.SetPosition(1, endNode.transform.position);
+            }
+
+            UpdateCollider();
         }
 
-        // Optional if you want to update once immediately after creating
+        // Called when we need an immediate update after creating / reassigning endpoints
         public void UpdateLineImmediate()
         {
-            if (startNode == null || endNode == null)
+            if (startNode == null || endNode == null || lr == null)
                 return;
 
             lr.SetPosition(0, startNode.transform.position);
             lr.SetPosition(1, endNode.transform.position);
+
+            UpdateCollider();
+        }
+
+        private void UpdateCollider()
+        {
+            if (edgeCollider == null || startNode == null || endNode == null)
+                return;
+
+            // Collider points are in local space of this GameObject
+            Vector2 p0 = transform.InverseTransformPoint(startNode.transform.position);
+            Vector2 p1 = transform.InverseTransformPoint(endNode.transform.position);
+
+            edgeCollider.points = new Vector2[] { p0, p1 };
         }
     }
 }
