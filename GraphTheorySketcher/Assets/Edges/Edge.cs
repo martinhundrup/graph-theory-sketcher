@@ -98,8 +98,9 @@ namespace GTS.Edges
             Destroyed?.Invoke(this);
         }
 
-        private void OnMouseDown()
+        new protected void OnMouseDown()
         {
+            base.OnMouseDown();
             // Only ever reachable if edgeCollider.enabled == true (Trash tool)
             if (ToolManager.ActiveTool == Tool.Trash)
             {

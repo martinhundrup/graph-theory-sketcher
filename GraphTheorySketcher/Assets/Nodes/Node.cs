@@ -10,8 +10,6 @@ using GTS.UI.Tabs;  // <-- to access EdgePlacer
 namespace GTS.Nodes {
     public class Node : GraphObject
     {
-
-
         public event Action<Node> Destroyed;
         private SpriteRenderer sr;
         private CircleCollider2D circleCollider2D;
@@ -39,6 +37,7 @@ namespace GTS.Nodes {
             sr = GetComponentInChildren<SpriteRenderer>();
             
             circleCollider2D = GetComponent<CircleCollider2D>();
+            SetLabel("");
         }
 
         private void OnDestroy()
@@ -61,8 +60,9 @@ namespace GTS.Nodes {
 
         // ---------- Mouse / Tool Logic ----------
 
-        private void OnMouseDown()
+        new private void OnMouseDown()
         {
+            base.OnMouseDown();
             // Trash tool: delete node
             if (ToolManager.ActiveTool == Tool.Trash)
             {

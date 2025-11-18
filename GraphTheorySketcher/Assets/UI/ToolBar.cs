@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using GTS.Tools;
+using GTS.UI.Inspector;
 using UnityEngine;
 
 namespace GTS.UI {
@@ -34,6 +35,8 @@ namespace GTS.UI {
 
         private void Update()
         {
+            if (Inspector.Inspector.TextSelected) return;
+
             if (Input.GetKeyDown(KeyCode.S))
             {
                 ToolManager.SetToolActive(Tool.Select);
