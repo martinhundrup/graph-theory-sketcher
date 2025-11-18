@@ -4,18 +4,15 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using GTS.Tools;   // <-- to access ToolManager and Tool
-using GTS.Edges;  // <-- to access EdgePlacer
+using GTS.Edges;
+using GTS.UI.Tabs;  // <-- to access EdgePlacer
 
 namespace GTS.Nodes {
     public class Node : GraphObject
     {
-        public static List<Node> AllNodes
-        {
-            get;
-            private set;
-        } = new List<Node>();
 
-        public event Action Destroyed;
+
+        public event Action<Node> Destroyed;
         private SpriteRenderer sr;
         private CircleCollider2D circleCollider2D;
 
@@ -30,9 +27,15 @@ namespace GTS.Nodes {
 
         new private void Awake()
         {
+            if (TabButton.ActiveButton == null)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+
             base.Awake();
 
-            AllNodes.Add(this);
+            TabButton.ActiveButton.TabData.RegisterNode(this);
             sr = GetComponentInChildren<SpriteRenderer>();
             
             circleCollider2D = GetComponent<CircleCollider2D>();
@@ -40,8 +43,7 @@ namespace GTS.Nodes {
 
         private void OnDestroy()
         {
-            AllNodes.Remove(this);
-            Destroyed?.Invoke();
+            Destroyed?.Invoke(this);
         }
 
         override public void SetScale(float s)
@@ -122,6 +124,16 @@ namespace GTS.Nodes {
         {
             // Only used for move tool dragging
             isDragging = false;
+        }
+
+        private void OnMouseEnter()
+        {
+            // If we are in Trash mode, and the mouse button is currently held down,
+            // delete this edge when the cursor sweeps over it.
+            if (ToolManager.ActiveTool == Tool.Trash && Input.GetMouseButton(0))
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

@@ -2,16 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using GTS.Nodes;
 using GTS.Tools;
+using System;
+using GTS.UI.Tabs;
 
 namespace GTS.Edges
 {
     public class Edge : GraphObject
     {
-        public static List<Edge> AllEdges
-        {
-            get;
-            private set;
-        } = new List<Edge>();
+        public event Action<Edge> Destroyed;
 
         [SerializeField] private Node startNode;
         [SerializeField] private Node endNode;
@@ -22,9 +20,39 @@ namespace GTS.Edges
         private LineRenderer lr;
         private EdgeCollider2D edgeCollider;
 
+        // -------------------------------------------------------
+        // New: hook into ToolManager so we can toggle collider
+        // -------------------------------------------------------
+        private void OnEnable()
+        {
+            ToolManager.OnActiveToolChanged += HandleToolChanged;
+            HandleToolChanged(ToolManager.ActiveTool); // apply current tool immediately
+        }
+
+        private void OnDisable()
+        {
+            ToolManager.OnActiveToolChanged -= HandleToolChanged;
+        }
+
+        private void HandleToolChanged(Tool tool)
+        {
+            // Edges should only be "clickable" when Trash is active
+            if (edgeCollider != null)
+            {
+                edgeCollider.enabled = (tool == Tool.Trash);
+            }
+        }
+        // -------------------------------------------------------
+
         new protected void Awake()
         {
-            AllEdges.Add(this);
+            if (TabButton.ActiveButton == null)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+
+            TabButton.ActiveButton.TabData.RegisterEdge(this);
 
             // Default edge thickness
             scale = 0.25f;
@@ -51,6 +79,9 @@ namespace GTS.Edges
             // Apply initial scale and positions
             SetScale(scale);
             UpdateLineImmediate();
+
+            // Make sure collider state matches current tool on creation
+            HandleToolChanged(ToolManager.ActiveTool);
         }
 
         private void OnDestroy()
@@ -64,13 +95,23 @@ namespace GTS.Edges
                 endNode.Destroyed -= NodeDeleted;
             }
 
-            AllEdges.Remove(this);
+            Destroyed?.Invoke(this);
         }
 
         private void OnMouseDown()
         {
-            // Delete this edge when Trash tool is active
+            // Only ever reachable if edgeCollider.enabled == true (Trash tool)
             if (ToolManager.ActiveTool == Tool.Trash)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void OnMouseEnter()
+        {
+            // If we are in Trash mode, and the mouse button is currently held down,
+            // delete this edge when the cursor sweeps over it.
+            if (ToolManager.ActiveTool == Tool.Trash && Input.GetMouseButton(0))
             {
                 Destroy(gameObject);
             }
@@ -115,7 +156,7 @@ namespace GTS.Edges
             UpdateLineImmediate();
         }
 
-        private void NodeDeleted()
+        private void NodeDeleted(Node n)
         {
             Destroy(gameObject);
         }

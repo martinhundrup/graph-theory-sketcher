@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 610979019837713846}
   - component: {fileID: 3264957653966410182}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 298365682261285939}
   - component: {fileID: 6481359076099969709}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Edge
   m_TagString: Untagged
   m_Icon: {fileID: 0}

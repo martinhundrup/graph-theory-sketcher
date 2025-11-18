@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GTS.UI.Tabs;
 
 namespace GTS.Tools {
 
@@ -19,16 +20,12 @@ namespace GTS.Tools {
     {
         public static event Action<Tool> OnActiveToolChanged;
 
-        public static Tool ActiveTool
-        {
-            get;
-            private set;
-        } = Tool.Select;
+        public static Tool ActiveTool { get; private set; } = Tool.Select;
 
-        public static void SetToolActive(Tool tool){
+        public static void SetToolActive(Tool tool)
+        {
             ActiveTool = tool;
             OnActiveToolChanged?.Invoke(tool);
         }
-
     }
 }
