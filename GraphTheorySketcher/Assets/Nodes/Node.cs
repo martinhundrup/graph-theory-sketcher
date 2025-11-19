@@ -6,7 +6,8 @@ using UnityEngine;
 using GTS.Tools;   // <-- to access ToolManager and Tool
 using GTS.Edges;
 using GTS.UI.Tabs;
-using GTS.UI.Inspector;  // <-- to access EdgePlacer
+using GTS.UI.Inspector;
+using Unity.VisualScripting;  // <-- to access EdgePlacer
 
 namespace GTS.Nodes {
     public class Node : GraphObject
@@ -39,11 +40,12 @@ namespace GTS.Nodes {
 
             minScale = 0.05f;
             scaleModifier = 10f;
+            UID = NodeIDGenerator.GetNextId();
             
             circleCollider2D = GetComponent<CircleCollider2D>();
             SetLabel("");
             SetScale(0.1f);
-            Inspector.ObjectSelected(this);
+            GTS.UI.Inspector.Inspector.ObjectSelected(this);
         }
 
         private void OnDestroy()
@@ -140,6 +142,43 @@ namespace GTS.Nodes {
             {
                 Destroy(gameObject);
             }
+        }
+
+        public ulong UID
+        {
+            get;
+            private set;
+        }
+
+        struct savable
+        {
+            public Color color;
+            public float scale;
+            public Vector3 position;
+            public string label;
+            public ulong uid;
+        }
+
+        public string ToJSON()
+        {
+            savable st = new savable();
+            st.color = color;
+            st.scale = scale;
+            st.position = this.transform.position;
+            st.label = this.Label;
+            st.uid = this.UID;
+           
+           return JsonUtility.ToJson(st);
+        }
+
+        public void LoadJSON(string json)
+        {
+            savable st = JsonUtility.FromJson<savable>(json);
+            this.SetColor(st.color);
+            this.SetScale(st.scale);
+            this.SetLabel(st.label);
+            this.UID = st.uid;
+            this.transform.position = st.position;
         }
     }
 }
