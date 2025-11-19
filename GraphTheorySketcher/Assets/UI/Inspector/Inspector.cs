@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using GTS;
 using GTS.UI.Inspector;
+using GTS.UI.Tabs;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,9 +46,11 @@ public class Inspector : MonoBehaviour
     [Header("Fields")]
     [SerializeField] private TMP_InputField labelInputField;
     [SerializeField] private Slider scaleSlider;
+    [SerializeField] private GameObject scaleSliderParent;
 
     private RectTransform rectTransform;
     private InspectorState state;
+    private bool edittingTab = false;
 
     public static void ObjectSelected(GraphObject obj)
     {
@@ -59,6 +63,8 @@ public class Inspector : MonoBehaviour
 
     private void Init()
     {
+        edittingTab = false;
+        scaleSliderParent.SetActive(true);
         labelInputField.SetTextWithoutNotify(SelectedObject.Label);
         scaleSlider.SetValueWithoutNotify(SelectedObject.Scale);
 
@@ -72,6 +78,37 @@ public class Inspector : MonoBehaviour
             SelectedObject.SelectedColorButton.OnClick();
         }
     }
+
+    public static void TabSelected(TabButton tab)
+    {
+        if (Instance) {
+            Instance.Init_Tab();
+        }
+    }
+
+    private void Init_Tab()
+    {
+        var btn = TabButton.ActiveButton;
+        if (btn == null) return;
+        var data = btn.TabData;
+        if (data == null) return; // shouldn't be possible
+
+        edittingTab = true;
+
+        labelInputField.SetTextWithoutNotify(data.Label);
+        scaleSliderParent.SetActive(false);
+
+        if (data.SelectedColorButton == null)
+        {
+            ColorButton.SetNoneActive();
+        }
+        else
+        {
+            data.SelectedColorButton.OnClick();
+        }
+    }
+
+    
 
     private void Awake()
     {
@@ -97,10 +134,20 @@ public class Inspector : MonoBehaviour
 
         // scale slider
         scaleSlider.onValueChanged.AddListener(SetObjectScale);
+
+        // if (SelectedObject == null || TabButton.ActiveButton == null)
+        // {
+        //     Collapse();
+        // }
     }
 
     private void OnColorClicked(ColorButton btn)
     {
+        if (edittingTab && TabButton.ActiveButton)
+        {
+            TabButton.ActiveButton.TabData.SetColorButton(btn);
+            return;
+        }
         if (SelectedObject == null || btn == null) return;
         SelectedObject.SetColor(btn.Color);
         SelectedObject.SelectedColorButton = btn;
@@ -124,6 +171,11 @@ public class Inspector : MonoBehaviour
 
     private void OnLabelValueChanged(string arg)
     {
+        if (edittingTab)
+        {
+            TabButton.ActiveButton.SetText(arg);
+            return;
+        }
         if (SelectedObject == null) return;
         SelectedObject.SetLabel(arg);
     }

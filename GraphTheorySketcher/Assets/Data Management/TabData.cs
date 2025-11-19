@@ -2,11 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using GTS.Edges;
 using GTS.Nodes;
+using GTS.UI.Inspector;
 using GTS.UI.Tabs;
 using UnityEngine;
 
 public class TabData
 {
+    public string Label
+    {
+        get;
+        private set;
+    }
+
+    public ColorButton SelectedColorButton
+    {
+        get;
+        private set;
+    }
+
     public List<Node> AllNodes
     {
         get;
@@ -63,6 +76,18 @@ public class TabData
     ~TabData()
     {
         TabButton.OnTabClicked -= SetActiveTab;
+    }
+
+    public void SetLabel(string l)
+    {
+        Label = l;
+    }
+
+    public void SetColorButton(ColorButton cb)
+    {
+        SelectedColorButton = cb;
+        if (!cb) return;
+        Camera.main.backgroundColor = cb.Color;
     }
 
     public void SetActiveTab(TabButton tab)

@@ -1,6 +1,8 @@
 using UnityEngine;
 using GTS.Tools;
-using GTS.UI.Inspector; // For Tool + ToolManager
+using GTS.UI.Inspector;
+using UnityEngine.EventSystems;
+using GTS.UI.Tabs; // For Tool + ToolManager
 
 namespace GTS
 {
@@ -62,6 +64,27 @@ namespace GTS
             }
         }
 
+        private bool IsPointerOverUI()
+        {
+            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        }
+
+
+        private bool MouseClickedOnTrulyEmpty()
+        {
+            if (!Input.GetMouseButtonDown(0))
+                return false;
+
+            if (IsPointerOverUI())
+                return false;
+
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity);
+
+            return hit.collider == null;
+        }
+
+
         private void HandleZoom()
         {
             float scroll = Input.mouseScrollDelta.y;
@@ -74,8 +97,14 @@ namespace GTS
 
         private void HandlePan()
         {
-            if (!panToolActive)
+
+            if (!panToolActive )
+            {
+                if (MouseClickedOnTrulyEmpty() && TabButton.ActiveButton && ToolManager.ActiveTool == Tool.Select)
+                    Inspector.TabSelected(TabButton.ActiveButton);
                 return;
+            }
+                
 
             // Left mouse drag to pan
             if (Input.GetMouseButton(0))

@@ -3652,6 +3652,7 @@ MonoBehaviour:
   animationDuration: 0.1
   labelInputField: {fileID: 785348381}
   scaleSlider: {fileID: 1640953248}
+  scaleSliderParent: {fileID: 1008171637}
 --- !u!1 &1215915126
 GameObject:
   m_ObjectHideFlags: 0

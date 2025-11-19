@@ -56,6 +56,12 @@ namespace GTS.UI.Tabs {
             TabData = tab;
         }
 
+        public void SetText(string t)
+        {
+            text.text = t + ".gts";
+            TabData.SetLabel(text.text);
+        }
+
         private void SetActive(TabButton tb)
         {
             if (this == tb)
@@ -75,6 +81,7 @@ namespace GTS.UI.Tabs {
         public void OnClick()
         {
             ActiveButton = this;
+            Inspector.Inspector.TabSelected(this);
             OnTabClicked?.Invoke(this);
         }
 

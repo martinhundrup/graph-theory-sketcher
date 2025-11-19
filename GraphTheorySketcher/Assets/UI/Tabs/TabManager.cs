@@ -47,7 +47,7 @@ namespace GTS.UI.Tabs
         private void OnAddTab()
         {
             var tab = Instantiate(tabPrefab, tabLayoutGroup.transform).GetComponent<TabButton>();
-            tab.Init("new_tab.gts", new TabData());
+            tab.Init("new_tab.", new TabData());
             tab.OnClick();
         }
     }
