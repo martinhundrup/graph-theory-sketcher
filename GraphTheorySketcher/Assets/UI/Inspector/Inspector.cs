@@ -4,6 +4,7 @@ using GTS;
 using GTS.UI.Inspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GTS.UI.Inspector {
 public class Inspector : MonoBehaviour
@@ -42,6 +43,7 @@ public class Inspector : MonoBehaviour
 
     [Header("Fields")]
     [SerializeField] private TMP_InputField labelInputField;
+    [SerializeField] private Slider scaleSlider;
 
     private RectTransform rectTransform;
     private InspectorState state;
@@ -57,7 +59,18 @@ public class Inspector : MonoBehaviour
 
     private void Init()
     {
-        labelInputField.text = SelectedObject.Label;
+        labelInputField.SetTextWithoutNotify(SelectedObject.Label);
+        scaleSlider.SetValueWithoutNotify(SelectedObject.Scale);
+
+
+        if (SelectedObject.SelectedColorButton == null)
+        {
+            ColorButton.SetNoneActive();
+        }
+        else
+        {
+            SelectedObject.SelectedColorButton.OnClick();
+        }
     }
 
     private void Awake()
@@ -75,10 +88,28 @@ public class Inspector : MonoBehaviour
         expandButton.SetActive(false);
         state = InspectorState.Expanded; // default fallback
 
-        labelInputField.onValueChanged.AddListener(OnLabelValueChanged);
+        ColorButton.OnColorClicked += OnColorClicked;
 
+        // name 
+        labelInputField.onValueChanged.AddListener(OnLabelValueChanged);
         labelInputField.onSelect.AddListener(SetTextTrue);
         labelInputField.onEndEdit.AddListener(SetTextFalse);
+
+        // scale slider
+        scaleSlider.onValueChanged.AddListener(SetObjectScale);
+    }
+
+    private void OnColorClicked(ColorButton btn)
+    {
+        if (SelectedObject == null || btn == null) return;
+        SelectedObject.SetColor(btn.Color);
+        SelectedObject.SelectedColorButton = btn;
+    }
+
+    private void SetObjectScale(float arg)
+    {
+        if (SelectedObject == null) return;
+        SelectedObject.SetScale(arg);
     }
 
     private void SetTextTrue(string arg)
@@ -93,6 +124,7 @@ public class Inspector : MonoBehaviour
 
     private void OnLabelValueChanged(string arg)
     {
+        if (SelectedObject == null) return;
         SelectedObject.SetLabel(arg);
     }
 
@@ -179,10 +211,7 @@ public class Inspector : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             Collapse();
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            Expand();
+            Expand(); // it toggles
         }
     }
 }

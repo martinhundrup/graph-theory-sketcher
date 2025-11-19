@@ -4,6 +4,7 @@ using GTS.Nodes;
 using GTS.Tools;
 using System;
 using GTS.UI.Tabs;
+using GTS.UI.Inspector;
 
 namespace GTS.Edges
 {
@@ -19,6 +20,8 @@ namespace GTS.Edges
 
         private LineRenderer lr;
         private EdgeCollider2D edgeCollider;
+
+        // private const float scaleModifier = 0.1f;
 
         // -------------------------------------------------------
         // New: hook into ToolManager so we can toggle collider
@@ -39,7 +42,7 @@ namespace GTS.Edges
             // Edges should only be "clickable" when Trash is active
             if (edgeCollider != null)
             {
-                edgeCollider.enabled = (tool == Tool.Trash);
+                edgeCollider.enabled = (tool == Tool.Trash || tool == Tool.Select);
             }
         }
         // -------------------------------------------------------
@@ -56,6 +59,8 @@ namespace GTS.Edges
 
             // Default edge thickness
             scale = 0.25f;
+            minScale = 0.05f;
+            scaleModifier = 1f;
 
             base.Awake();
 
@@ -82,6 +87,8 @@ namespace GTS.Edges
 
             // Make sure collider state matches current tool on creation
             HandleToolChanged(ToolManager.ActiveTool);
+            SetLabel("");
+            Inspector.ObjectSelected(this);
         }
 
         private void OnDestroy()
@@ -96,6 +103,12 @@ namespace GTS.Edges
             }
 
             Destroyed?.Invoke(this);
+        }
+
+        override public void SetColor(Color c)
+        {
+            base.SetColor(c);
+            lr.startColor = lr.endColor = color;
         }
 
         new protected void OnMouseDown()
@@ -124,14 +137,14 @@ namespace GTS.Edges
 
             if (lr != null)
             {
-                lr.startWidth = s;
-                lr.endWidth   = s;
+                lr.startWidth = scale * scaleModifier;
+                lr.endWidth   = scale * scaleModifier;
             }
 
             if (edgeCollider != null)
             {
                 // Thickness for hitbox; tweak as needed
-                edgeCollider.edgeRadius = s * 0.5f;
+                edgeCollider.edgeRadius = scale * 0.5f * scaleModifier;
             }
         }
 
@@ -173,10 +186,11 @@ namespace GTS.Edges
 
             if (lr != null)
             {
-                lr.SetPosition(0, startNode.transform.position);
-                lr.SetPosition(1, endNode.transform.position);
+                lr.SetPosition(0, startNode.transform.position + Vector3.forward);
+                lr.SetPosition(1, endNode.transform.position + Vector3.forward);
             }
 
+            UpdateLabelPosition();
             UpdateCollider();
         }
 
@@ -186,9 +200,10 @@ namespace GTS.Edges
             if (startNode == null || endNode == null || lr == null)
                 return;
 
-            lr.SetPosition(0, startNode.transform.position);
-            lr.SetPosition(1, endNode.transform.position);
+            lr.SetPosition(0, startNode.transform.position + Vector3.forward);
+            lr.SetPosition(1, endNode.transform.position + Vector3.forward);
 
+            UpdateLabelPosition();
             UpdateCollider();
         }
 
@@ -203,5 +218,19 @@ namespace GTS.Edges
 
             edgeCollider.points = new Vector2[] { p0, p1 };
         }
+
+        private void UpdateLabelPosition()
+        {
+            if (canvas == null || startNode == null || endNode == null)
+                return;
+
+            Vector3 mid = (startNode.transform.position + endNode.transform.position) * 0.5f;
+
+            // Keep original Z so it stays on the right canvas/sorting plane
+            mid.z = canvas.transform.position.z;
+
+            canvas.transform.position = mid;
+        }
+
     }
 }

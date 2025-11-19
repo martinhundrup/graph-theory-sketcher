@@ -57,6 +57,10 @@ namespace GTS.UI {
             {
                 ToolManager.SetToolActive(Tool.Trash);
             }
+            else if (Input.GetKeyDown(KeyCode.P))
+            {
+                ToolManager.SetToolActive(Tool.Pan);
+            }
         }
 
         public void SetToolActive(Tool tool)

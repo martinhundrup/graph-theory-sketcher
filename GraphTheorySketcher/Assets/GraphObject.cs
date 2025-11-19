@@ -11,16 +11,28 @@ namespace GTS{
     {
         [SerializeField] protected float scale = 1f;
         [SerializeField] protected Color color = Color.white;
+        [SerializeField] protected float minScale = 0.2f;
+        [SerializeField] protected float scaleModifier = 10f;
 
 
-        private ColorButton selectedColorButton;
-        private Canvas canvas;
+        protected Canvas canvas;
         private TextMeshProUGUI text;
+
+        public ColorButton SelectedColorButton
+        {
+            get;
+            set;
+        }
 
         public string Label
         {
             get;
             private set;
+        }
+
+        public float Scale
+        {
+            get {return scale;}
         }
 
         protected void Awake()
@@ -40,6 +52,10 @@ namespace GTS{
         public virtual void SetScale(float s)
         {
             scale = s;
+            if (scale <= minScale)
+            {
+                scale = minScale;
+            }
         }
 
         public virtual void SetColor(Color c)

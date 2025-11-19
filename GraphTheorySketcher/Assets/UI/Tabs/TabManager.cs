@@ -25,6 +25,7 @@ namespace GTS.UI.Tabs
             }
 
             Instance = this;
+            OnAddTab(); // add starting tab
         }
 
         private void OnDestroy()

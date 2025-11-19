@@ -5,7 +5,8 @@ using TMPro;
 using UnityEngine;
 using GTS.Tools;   // <-- to access ToolManager and Tool
 using GTS.Edges;
-using GTS.UI.Tabs;  // <-- to access EdgePlacer
+using GTS.UI.Tabs;
+using GTS.UI.Inspector;  // <-- to access EdgePlacer
 
 namespace GTS.Nodes {
     public class Node : GraphObject
@@ -35,9 +36,14 @@ namespace GTS.Nodes {
 
             TabButton.ActiveButton.TabData.RegisterNode(this);
             sr = GetComponentInChildren<SpriteRenderer>();
+
+            minScale = 0.05f;
+            scaleModifier = 10f;
             
             circleCollider2D = GetComponent<CircleCollider2D>();
             SetLabel("");
+            SetScale(0.1f);
+            Inspector.ObjectSelected(this);
         }
 
         private void OnDestroy()
@@ -48,8 +54,8 @@ namespace GTS.Nodes {
         override public void SetScale(float s)
         {
             base.SetScale(s);
-            circleCollider2D.radius = scale / 2f;
-            sr.gameObject.transform.localScale = Vector3.one * s;
+            circleCollider2D.radius = scale * scaleModifier / 2f;
+            sr.gameObject.transform.localScale = Vector3.one * scale * scaleModifier;
         }
 
         override public void SetColor(Color c)

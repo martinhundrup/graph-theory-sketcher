@@ -14,6 +14,7 @@ namespace GTS.Tools {
         NodeCreator, // for creating nodes
         EdgeCreator, // for creating/drawing edges
         Trash, // deletes nodes and edges
+        Pan,
     }
 
     public static class ToolManager
