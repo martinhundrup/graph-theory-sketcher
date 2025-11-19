@@ -18,6 +18,17 @@ namespace GTS.Edges
         public Node StartNode => startNode;
         public Node EndNode   => endNode;
 
+        public Color EdgeColor
+        {
+            get { return color; }
+        }
+
+        public float EdgeScale
+        {
+            get { return scale; }
+        }
+
+
         private LineRenderer lr;
         private EdgeCollider2D edgeCollider;
 

@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection.Emit;
+using GTS.Edges;
+using GTS.Nodes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -52,8 +55,8 @@ namespace GTS.UI.Tabs {
 
         public void Init(string name, TabData tab)
         {
-            text.text = name;
             TabData = tab;
+            SetText(name);
         }
 
         public void SetText(string t)
@@ -91,6 +94,5 @@ namespace GTS.UI.Tabs {
             fillImage.color = hovered ? Color.white : Color.black;
             text.color = hovered ? Color.black : Color.white;
         }
-
     }
 }

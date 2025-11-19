@@ -532,6 +532,7 @@ GameObject:
   - component: {fileID: 135055308}
   - component: {fileID: 135055307}
   - component: {fileID: 135055306}
+  - component: {fileID: 135055309}
   m_Layer: 5
   m_Name: Version Text
   m_TagString: Untagged
@@ -669,6 +670,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 135055304}
   m_CullTransparentMesh: 1
+--- !u!114 &135055309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 135055304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 489262e51531cfd4f8721633ffb6c491, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &180884490
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,7 +972,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 253147672}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 253147667}
+        m_TargetAssemblyTypeName: GTS.UI.FileButton, Assembly-CSharp
+        m_MethodName: LoadNewGraph
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &253147669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2059,7 +2084,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 6108537233945176463, guid: 4eaaf367e27f7474f83ace7d6d27dead, type: 3}
-  edgePrefab: {fileID: 0}
+  edgePrefab: {fileID: 8200505720865417956, guid: 2482b53644a2a4430b6d3fe0daaac619, type: 3}
 --- !u!4 &559710440
 Transform:
   m_ObjectHideFlags: 0
@@ -3031,7 +3056,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 823963523}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 823963518}
+        m_TargetAssemblyTypeName: GTS.UI.FileButton, Assembly-CSharp
+        m_MethodName: SaveActiveGraph
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &823963520
 MonoBehaviour:
   m_ObjectHideFlags: 0

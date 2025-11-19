@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GTS.UI.Tabs;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -32,6 +33,21 @@ namespace GTS.UI {
         {
             image.color = hovered ? Color.white : Color.black;
             text.color = hovered ? Color.black : Color.white;
+        }
+
+        public void SaveActiveGraph()
+        {
+            var activeTab = TabButton.ActiveButton;
+            if (activeTab)
+            {
+                if (activeTab.TabData == null) return;
+                activeTab.TabData.SaveJson(FileDialogs.OpenSaveDialog(activeTab.TabData.Label));
+            }
+        }
+
+        public void LoadNewGraph()
+        {
+            TabManager.LoadTabFromDisk();
         }
 
     }

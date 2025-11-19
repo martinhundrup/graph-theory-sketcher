@@ -7,7 +7,8 @@ using GTS.Tools;   // <-- to access ToolManager and Tool
 using GTS.Edges;
 using GTS.UI.Tabs;
 using GTS.UI.Inspector;
-using Unity.VisualScripting;  // <-- to access EdgePlacer
+using Unity.VisualScripting;
+using System.IO;  // <-- to access EdgePlacer
 
 namespace GTS.Nodes {
     public class Node : GraphObject
@@ -24,6 +25,23 @@ namespace GTS.Nodes {
         {
             get {return isDragging;}
         }
+
+        public ulong UID
+        {
+            get;
+            private set;
+        }
+
+        public Color NodeColor
+        {
+            get { return color; }
+        }
+
+        public float NodeScale
+        {
+            get { return scale; }
+        }
+
 
         new private void Awake()
         {
@@ -46,6 +64,11 @@ namespace GTS.Nodes {
             SetLabel("");
             SetScale(0.1f);
             GTS.UI.Inspector.Inspector.ObjectSelected(this);
+        }
+
+        public void SetUID(ulong uid)
+        {
+            UID = uid;
         }
 
         private void OnDestroy()
@@ -144,12 +167,6 @@ namespace GTS.Nodes {
             }
         }
 
-        public ulong UID
-        {
-            get;
-            private set;
-        }
-
         struct savable
         {
             public Color color;
@@ -159,7 +176,14 @@ namespace GTS.Nodes {
             public ulong uid;
         }
 
-        public string ToJSON()
+        public void SaveJson(string directory)
+        {
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+            File.WriteAllText(Path.Combine(directory, Label, ".node"), ToJSON());
+        }
+
+        private string ToJSON()
         {
             savable st = new savable();
             st.color = color;
