@@ -169,8 +169,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 20
-      y: 51
+      x: 36
+      y: 4
       width: 6
       height: 8
     spriteID: 5ed95da49b9bd4058aa85cce02e3c605
@@ -249,7 +249,7 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 36
+      x: 50
       y: 4
       width: 8
       height: 6
@@ -269,7 +269,7 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 36
+      x: 50
       y: 18
       width: 8
       height: 6
@@ -290,7 +290,7 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 20
-      y: 36
+      y: 52
       width: 7
       height: 7
     spriteID: 760a201c42bd14b19a71320d2ef2ddde
@@ -309,8 +309,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 36
-      y: 32
+      x: 50
+      y: 46
       width: 6
       height: 7
     spriteID: 462df0093266b48d781b42c943576bf1
@@ -342,6 +342,46 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 20, y: 20}
+  - name: eye_icon
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 50
+      y: 32
+      width: 8
+      height: 6
+    spriteID: 702c881399866404c8586e1c4e446609
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 36, y: 32}
+  - name: eye_closed_icon
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 20
+      y: 36
+      width: 8
+      height: 8
+    spriteID: beed06b2ec1b447d086ee78973af2170
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 20, y: 36}
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
@@ -455,6 +495,24 @@ ScriptedImporter:
         width: 8
         height: 8
       spriteId: e6f5a22863daa4174ba7d19be1094c7b
+    - name: Frame_11
+      frameIndex: 11
+      additiveSortOrder: 0
+      cellRect:
+        x: 0
+        y: 1
+        width: 8
+        height: 6
+      spriteId: 702c881399866404c8586e1c4e446609
+    - name: Frame_12
+      frameIndex: 12
+      additiveSortOrder: 0
+      cellRect:
+        x: 0
+        y: 0
+        width: 8
+        height: 8
+      spriteId: beed06b2ec1b447d086ee78973af2170
     linkedCells: []
     parentIndex: -1
   platformSettings:

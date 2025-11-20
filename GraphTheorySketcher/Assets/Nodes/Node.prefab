@@ -400,6 +400,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scale: 1
   color: {r: 1, g: 1, b: 1, a: 1}
+  minScale: 0.2
+  scaleModifier: 10
 --- !u!58 &8402131267063190456
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -447,6 +449,7 @@ GameObject:
   - component: {fileID: 9010607113448877335}
   - component: {fileID: 2754180872760447372}
   - component: {fileID: 4991534936024113657}
+  - component: {fileID: 8356820870557593018}
   m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
@@ -537,6 +540,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8356820870557593018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8205688265341959446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51f91180bc93d49cdbfe12155ee3a172, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8210819911608148945
 GameObject:
   m_ObjectHideFlags: 0
