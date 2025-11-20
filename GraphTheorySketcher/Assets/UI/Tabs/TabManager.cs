@@ -51,6 +51,7 @@ namespace GTS.UI.Tabs
             var tab = Instantiate(tabPrefab, tabLayoutGroup.transform).GetComponent<TabButton>();
             tab.Init("new_tab", new TabData());
             tab.OnClick();
+            Inspector.Inspector.Instance.Expand();
         }
 
         // =====================================================================

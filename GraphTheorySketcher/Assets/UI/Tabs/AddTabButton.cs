@@ -10,6 +10,7 @@ namespace GTS.UI.Tabs{
         private Button button;
         private Image image;
         private TextMeshProUGUI text;
+        [SerializeField] private bool addTab = true;
 
         private void Awake()
         {
@@ -22,7 +23,9 @@ namespace GTS.UI.Tabs{
 
         private void OnPointerClick()
         {
-            TabManager.AddTab();
+            if (addTab){
+                TabManager.AddTab();
+            }
         }
 
         public void OnHovered(bool hovered)

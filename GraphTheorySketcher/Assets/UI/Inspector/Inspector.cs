@@ -67,7 +67,7 @@ public class Inspector : MonoBehaviour
         scaleSliderParent.SetActive(true);
         labelInputField.SetTextWithoutNotify(SelectedObject.Label);
         scaleSlider.SetValueWithoutNotify(SelectedObject.Scale);
-
+        
 
         if (SelectedObject.SelectedColorButton == null)
         {
@@ -107,6 +107,11 @@ public class Inspector : MonoBehaviour
             data.SelectedColorButton.OnClick();
         }
     }
+
+        public static void OnTabClosed()
+        {
+            Instance.Collapse();
+        }
 
     
 

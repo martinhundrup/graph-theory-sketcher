@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using GTS.Edges;
 using GTS.Nodes;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -93,6 +94,22 @@ namespace GTS.UI.Tabs {
             if (Active) return; // nothing
             fillImage.color = hovered ? Color.white : Color.black;
             text.color = hovered ? Color.black : Color.white;
+        }
+
+        public void CloseTab()
+        {
+            ActiveButton = null;
+            Inspector.Inspector.OnTabClosed();
+            foreach (var n in TabData.AllNodes)
+            {
+                Destroy(n.gameObject);
+            }
+            foreach (var e in TabData.AllEdges)
+            {
+                Destroy(e.gameObject);
+            }
+
+            Destroy(this.gameObject);
         }
     }
 }
