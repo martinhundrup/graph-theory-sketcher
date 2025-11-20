@@ -38,12 +38,23 @@ namespace GTS.UI {
         public void SaveActiveGraph()
         {
             var activeTab = TabButton.ActiveButton;
-            if (activeTab)
+            if (activeTab == null || activeTab.TabData == null)
+                return;
+
+            // Use the tab's label as the default file name
+            string defaultName = activeTab.TabData.Label;
+
+            FileDialogs.OpenSaveDialog(defaultName, filePath =>
             {
-                if (activeTab.TabData == null) return;
-                activeTab.TabData.SaveJson(FileDialogs.OpenSaveDialog(activeTab.TabData.Label));
-            }
+                // User cancelled or dialog failed
+                if (string.IsNullOrEmpty(filePath))
+                    return;
+
+                // Save the tab to the chosen file
+                activeTab.TabData.SaveJson(filePath);
+            });
         }
+
 
         public void LoadNewGraph()
         {

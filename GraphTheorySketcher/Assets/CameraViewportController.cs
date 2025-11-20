@@ -130,5 +130,10 @@ namespace GTS
             transform.position = defaultPosition;
             cam.orthographicSize = defaultZoom;
         }
+
+        public void OnExit()
+        {
+            Application.Quit();
+        }
     }
 }

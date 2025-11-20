@@ -70,72 +70,72 @@ namespace GTS.UI.Tabs
 
         private void OnLoadTabFromDisk()
         {
-            // 1. Ask user to choose a .gts file
-            string filePath = FileDialogs.OpenLoadDialog();
-            if (string.IsNullOrEmpty(filePath))
-                return;
-
-            // 2. Let TabData parse the JSON from that file
-            TabData.TabSaveData saveData = TabData.LoadFromFile(filePath);
-
-            if (saveData.nodes == null || saveData.edges == null)
+            // 1. Ask user to choose a .gts file (ASYNC)
+            FileDialogs.OpenLoadDialog(filePath =>
             {
-                Debug.LogError($"Failed to load tab from '{filePath}': nodes/edges were null.");
-                return;
-            }
+                if (string.IsNullOrEmpty(filePath))
+                    return;
 
-            // 3. Instantiate a new tab UI from the prefab
-            var tabGO = Instantiate(tabPrefab, tabLayoutGroup.transform);
-            var tabButton = tabGO.GetComponent<TabButton>();
-            var tabData = new TabData();
+                // 2. Let TabData parse the JSON from that file
+                TabData.TabSaveData saveData = TabData.LoadFromFile(filePath);
 
-            tabButton.Init(saveData.label, tabData);
+                if (saveData.nodes == null || saveData.edges == null)
+                {
+                    Debug.LogError($"Failed to load tab from '{filePath}': nodes/edges were null.");
+                    return;
+                }
 
-            // Set tab metadata
-            tabData.SetLabel(saveData.label);
-            if (tabData.SelectedColorButton != null)
-            {
-                tabData.SetColorIsolated(saveData.color);
-            }
+                // 3. Instantiate a new tab UI from the prefab
+                var tabGO = Instantiate(tabPrefab, tabLayoutGroup.transform);
+                var tabButton = tabGO.GetComponent<TabButton>();
+                var tabData = new TabData();
 
-            // 6. Activate the new tab (reuses your existing click logic)
-            tabButton.OnClick();
+                tabButton.Init(saveData.label, tabData);
 
-            // 4. Rebuild graph: nodes
-            Dictionary<ulong, Node> uidMap = new Dictionary<ulong, Node>();
+                // Set tab metadata
+                tabData.SetLabel(saveData.label);
+                if (tabData.SelectedColorButton != null)
+                {
+                    tabData.SetColorIsolated(saveData.color);
+                }
 
-            foreach (var n in saveData.nodes)
-            {
-                var nodeGO = Instantiate(DataManager.Instance.NodePrefab);
-                var node = nodeGO.GetComponent<Node>();
+                // 6. Activate the new tab (reuses your existing click logic)
+                tabButton.OnClick();
 
-                node.transform.position = n.position;
-                node.SetLabel(n.label);
-                node.SetColor(n.color);
-                node.SetScale(n.scale);
-                node.SetUID(n.uid);
+                // 4. Rebuild graph: nodes
+                Dictionary<ulong, Node> uidMap = new Dictionary<ulong, Node>();
 
-                uidMap[n.uid] = node;
-            }
+                foreach (var n in saveData.nodes)
+                {
+                    var nodeGO = Instantiate(DataManager.Instance.NodePrefab);
+                    var node = nodeGO.GetComponent<Node>();
 
-            // 5. Rebuild graph: edges
-            foreach (var e in saveData.edges)
-            {
-                if (!uidMap.TryGetValue(e.startUid, out var start)) continue;
-                if (!uidMap.TryGetValue(e.endUid, out var end)) continue;
+                    node.transform.position = n.position;
+                    node.SetLabel(n.label);
+                    node.SetColor(n.color);
+                    node.SetScale(n.scale);
+                    node.SetUID(n.uid);
 
-                var edgeGO = Instantiate(DataManager.Instance.EdgePrefab);
-                var edge = edgeGO.GetComponent<Edge>();
+                    uidMap[n.uid] = node;
+                }
 
-                edge.SetEndpoints(start, end);
-                edge.SetLabel(e.label);
-                edge.SetColor(e.color);
-                edge.SetScale(e.scale);
-            }
+                // 5. Rebuild graph: edges
+                foreach (var e in saveData.edges)
+                {
+                    if (!uidMap.TryGetValue(e.startUid, out var start)) continue;
+                    if (!uidMap.TryGetValue(e.endUid, out var end)) continue;
 
-            
+                    var edgeGO = Instantiate(DataManager.Instance.EdgePrefab);
+                    var edge = edgeGO.GetComponent<Edge>();
 
-            Debug.Log("Loaded tab: " + saveData.label);
+                    edge.SetEndpoints(start, end);
+                    edge.SetLabel(e.label);
+                    edge.SetColor(e.color);
+                    edge.SetScale(e.scale);
+                }
+
+                Debug.Log("Loaded tab: " + saveData.label);
+            });
         }
     }
 }
