@@ -5,6 +5,7 @@ using GTS.Tools;
 using System;
 using GTS.UI.Tabs;
 using GTS.UI.Inspector;
+using TMPro;
 
 namespace GTS.Edges
 {
@@ -14,6 +15,8 @@ namespace GTS.Edges
 
         [SerializeField] private Node startNode;
         [SerializeField] private Node endNode;
+        [SerializeField] protected Canvas weightCanvas;
+
 
         public Node StartNode => startNode;
         public Node EndNode   => endNode;
@@ -26,6 +29,25 @@ namespace GTS.Edges
         public float EdgeScale
         {
             get { return scale; }
+        }
+
+        public bool HasWeight
+        {
+            get;
+            private set;
+        } = false;
+
+        public int Weight
+        {
+            get;
+            set;
+        } = 0;
+
+        public void ReverseEdge()
+        {
+            var t = StartNode;
+            startNode = endNode;
+            endNode = t;
         }
 
 
@@ -99,6 +121,7 @@ namespace GTS.Edges
             // Make sure collider state matches current tool on creation
             HandleToolChanged(ToolManager.ActiveTool);
             SetLabel("");
+            SetWeight("");
             Inspector.ObjectSelected(this);
         }
 
@@ -114,6 +137,21 @@ namespace GTS.Edges
             }
 
             Destroyed?.Invoke(this);
+        }
+
+        public void SetWeight(string t)
+        {
+            if (t == "")
+            {
+                weightCanvas.gameObject.SetActive(false);
+                HasWeight = false;
+                return;
+            }
+
+            HasWeight = true;
+            Weight = int.Parse(t);
+            weightCanvas.GetComponentInChildren<TextMeshProUGUI>().text = $"weight: {t}";
+            weightCanvas.gameObject.SetActive(true);
         }
 
         override public void SetColor(Color c)
@@ -232,15 +270,16 @@ namespace GTS.Edges
 
         private void UpdateLabelPosition()
         {
-            if (canvas == null || startNode == null || endNode == null)
+            if (label == null || startNode == null || endNode == null)
                 return;
 
             Vector3 mid = (startNode.transform.position + endNode.transform.position) * 0.5f;
 
             // Keep original Z so it stays on the right canvas/sorting plane
-            mid.z = canvas.transform.position.z;
+            mid.z = label.transform.position.z;
 
-            canvas.transform.position = mid;
+            label.transform.position = mid;
+            weightCanvas.transform.position = mid + Vector3.down * 0.5f;
         }
 
     }

@@ -14,8 +14,8 @@ namespace GTS{
         [SerializeField] protected float minScale = 0.2f;
         [SerializeField] protected float scaleModifier = 10f;
 
+        [SerializeField] protected Canvas label;
 
-        protected Canvas canvas;
         private TextMeshProUGUI text;
 
         public ColorButton SelectedColorButton
@@ -37,7 +37,7 @@ namespace GTS{
 
         protected void Awake()
         {
-            canvas = GetComponentInChildren<Canvas>();
+            label = GetComponentInChildren<Canvas>();
             text = GetComponentInChildren<TextMeshProUGUI>();
         }
 
@@ -67,7 +67,7 @@ namespace GTS{
         {
             Label = t;
             text.text = t;
-            canvas.gameObject.SetActive(t != "");
+            label.gameObject.SetActive(t != "");
         }
 
     }
