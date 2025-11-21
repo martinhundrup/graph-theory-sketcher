@@ -9,7 +9,7 @@ namespace GTS.UI
     {
         private void Awake()
         {
-            GetComponent<TextMeshProUGUI>().text = $"Graph Theory Sketcher v{Application.version}";
+            GetComponent<TextMeshProUGUI>().text = $"Sketch-O-Graph v{Application.version}";
         }
     }
 }

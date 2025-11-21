@@ -17,7 +17,7 @@ namespace GTS.UI.Tabs
 
         [SerializeField] private GameObject tabPrefab;
         [SerializeField] private HorizontalLayoutGroup tabLayoutGroup;
-        
+
         private void Awake()
         {
             if (Instance != null)
@@ -56,6 +56,7 @@ namespace GTS.UI.Tabs
 
         // =====================================================================
         //  LOAD TAB FROM DISK (static entry point)
+        //  (Public API unchanged)
         // =====================================================================
 
         public static void LoadTabFromDisk()
@@ -71,25 +72,35 @@ namespace GTS.UI.Tabs
 
         private void OnLoadTabFromDisk()
         {
-            // 1. Ask user to choose a .gts file (ASYNC)
-            FileDialogs.OpenLoadDialog(filePath =>
+            // New: ask FileDialogs to handle platform-specific load
+            FileDialogs.LoadGraph(fileContent =>
             {
-                if (string.IsNullOrEmpty(filePath))
+                // User cancelled or unsupported platform
+                if (string.IsNullOrEmpty(fileContent))
                     return;
 
-                // 2. Let TabData parse the JSON from that file
-                TabData.TabSaveData saveData = TabData.LoadFromFile(filePath);
+                // Parse JSON directly into TabSaveData
+                TabData.TabSaveData saveData;
+                try
+                {
+                    saveData = JsonUtility.FromJson<TabData.TabSaveData>(fileContent);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"Failed to parse tab JSON: {ex}");
+                    return;
+                }
 
                 if (saveData.nodes == null || saveData.edges == null)
                 {
-                    Debug.LogError($"Failed to load tab from '{filePath}': nodes/edges were null.");
+                    Debug.LogError("Failed to load tab: nodes/edges were null in save data.");
                     return;
                 }
 
                 // 3. Instantiate a new tab UI from the prefab
-                var tabGO = Instantiate(tabPrefab, tabLayoutGroup.transform);
+                var tabGO    = Instantiate(tabPrefab, tabLayoutGroup.transform);
                 var tabButton = tabGO.GetComponent<TabButton>();
-                var tabData = new TabData();
+                var tabData   = new TabData();
 
                 tabButton.Init(saveData.label, tabData);
 
@@ -109,7 +120,7 @@ namespace GTS.UI.Tabs
                 foreach (var n in saveData.nodes)
                 {
                     var nodeGO = Instantiate(DataManager.Instance.NodePrefab);
-                    var node = nodeGO.GetComponent<Node>();
+                    var node   = nodeGO.GetComponent<Node>();
 
                     node.transform.position = n.position;
                     node.SetLabel(n.label);
@@ -124,10 +135,10 @@ namespace GTS.UI.Tabs
                 foreach (var e in saveData.edges)
                 {
                     if (!uidMap.TryGetValue(e.startUid, out var start)) continue;
-                    if (!uidMap.TryGetValue(e.endUid, out var end)) continue;
+                    if (!uidMap.TryGetValue(e.endUid, out var end))   continue;
 
                     var edgeGO = Instantiate(DataManager.Instance.EdgePrefab);
-                    var edge = edgeGO.GetComponent<Edge>();
+                    var edge   = edgeGO.GetComponent<Edge>();
 
                     edge.SetEndpoints(start, end);
                     edge.SetLabel(e.label);

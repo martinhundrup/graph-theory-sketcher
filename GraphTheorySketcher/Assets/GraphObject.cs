@@ -13,7 +13,7 @@ namespace GTS{
         [SerializeField] protected Color color = Color.white;
         [SerializeField] protected float minScale = 0.2f;
         [SerializeField] protected float scaleModifier = 10f;
-
+        [SerializeField] protected GameObject selectedArrow;
         [SerializeField] protected Canvas label;
 
         private TextMeshProUGUI text;
@@ -39,6 +39,17 @@ namespace GTS{
         {
             label = GetComponentInChildren<Canvas>();
             text = GetComponentInChildren<TextMeshProUGUI>();
+            Inspector.OnObjectSelected += OnSelected;
+        }
+
+        protected void OnDestroy()
+        {
+            Inspector.OnObjectSelected -= OnSelected;
+        }
+
+        protected void OnSelected(GraphObject obj)
+        {
+            selectedArrow.SetActive(this == obj);
         }
 
         protected void OnMouseDown()

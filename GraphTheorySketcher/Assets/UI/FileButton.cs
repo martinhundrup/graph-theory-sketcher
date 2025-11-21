@@ -7,13 +7,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace GTS.UI {
+namespace GTS.UI
+{
     public class FileButton : MonoBehaviour
     {
         private Button button;
         private Image image;
         private TextMeshProUGUI text;
-
 
         private void Awake()
         {
@@ -26,15 +26,18 @@ namespace GTS.UI {
 
         private void OnPointerClick()
         {
-            // do something
+            // do something (hook up via inspector if needed)
         }
 
         public void SetColors(bool hovered)
         {
             image.color = hovered ? Color.white : Color.black;
-            text.color = hovered ? Color.black : Color.white;
+            text.color  = hovered ? Color.black : Color.white;
         }
 
+        // ---------------------------------------------------------------------
+        // PUBLIC API (unchanged signature)
+        // ---------------------------------------------------------------------
         public void SaveActiveGraph()
         {
             var activeTab = TabButton.ActiveButton;
@@ -44,22 +47,23 @@ namespace GTS.UI {
             // Use the tab's label as the default file name
             string defaultName = activeTab.TabData.Label;
 
-            FileDialogs.OpenSaveDialog(defaultName, filePath =>
-            {
-                // User cancelled or dialog failed
-                if (string.IsNullOrEmpty(filePath))
-                    return;
-
-                // Save the tab to the chosen file
-                activeTab.TabData.SaveJson(filePath);
-            });
+            // New: use FileDialogs.SaveGraph, which handles Editor/WebGL/standalone
+            FileDialogs.SaveGraph(
+                defaultName,
+                () => activeTab.TabData.ToJSON(), // you implement ToJson() on TabData
+                success =>
+                {
+                    if (!success)
+                    {
+                        Debug.Log("[FileButton] SaveActiveGraph: save cancelled or failed.");
+                    }
+                });
         }
 
-
+        // Still just a thin wrapper around TabManager
         public void LoadNewGraph()
         {
             TabManager.LoadTabFromDisk();
         }
-
     }
 }

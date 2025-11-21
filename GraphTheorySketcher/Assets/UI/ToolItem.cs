@@ -10,6 +10,7 @@ namespace GTS.UI {
         private Image backgroundImage;
         private Button button;
         [SerializeField] private Tool tool;
+        [SerializeField] private bool startSelected = false;
         
         private void Awake()
         {
@@ -17,6 +18,13 @@ namespace GTS.UI {
             backgroundImage = GetComponent<Image>();
             button = GetComponent<Button>();
             button.onClick.AddListener(ButtonListener);
+
+        }
+
+        private void Start()
+        {
+            if (startSelected) ButtonListener();
+            
         }
 
         private void OnDestroy()

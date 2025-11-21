@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using GTS;
+using GTS.DataManagement;
 using GTS.UI.Inspector;
 using GTS.UI.Tabs;
 using TMPro;
@@ -11,6 +12,7 @@ using UnityEngine.UI;
 namespace GTS.UI.Inspector {
     public class Inspector : MonoBehaviour
     {
+        public static event Action<GraphObject> OnObjectSelected;
         private enum InspectorState
         {
             Expanded,
@@ -52,6 +54,9 @@ namespace GTS.UI.Inspector {
         [SerializeField] private GameObject edgeContainer;
         [SerializeField] private TMP_InputField weightInputField;
         [SerializeField] private Toggle directedToggle;
+
+        [Header("Nodes")]
+        [SerializeField] private GameObject nodeContainer;
         
 
         private RectTransform rectTransform;
@@ -63,6 +68,7 @@ namespace GTS.UI.Inspector {
             SelectedObject = obj;
             if (Instance)
             {
+                OnObjectSelected?.Invoke(obj);
                 Instance.Init();
             }
         }
@@ -92,9 +98,22 @@ namespace GTS.UI.Inspector {
                 {
                     weightInputField.SetTextWithoutNotify(edge.Weight.ToString());
                 }
+                else
+                {
+                    weightInputField.SetTextWithoutNotify("");
+                }
+                directedToggle.SetIsOnWithoutNotify(edge.IsDirected);
             }
             else
                 edgeContainer.SetActive(false);
+
+            if (SelectedObject && SelectedObject is GTS.Nodes.Node)
+            {
+                nodeContainer.SetActive(true);
+                
+            }
+            else
+                nodeContainer.SetActive(false);
 
 
 
@@ -115,6 +134,10 @@ namespace GTS.UI.Inspector {
             if (data == null) return; // shouldn't be possible
 
             edittingTab = true;
+            OnObjectSelected?.Invoke(null);
+            edgeContainer.SetActive(false);
+            nodeContainer.SetActive(false);
+
 
             labelInputField.SetTextWithoutNotify(data.Label);
             scaleSliderParent.SetActive(false);
@@ -165,10 +188,20 @@ namespace GTS.UI.Inspector {
             weightInputField.onSelect.AddListener(SetTextTrue);
             weightInputField.onEndEdit.AddListener(SetTextFalse);
 
+            directedToggle.onValueChanged.AddListener(OnDirectedToggleValueChanged);
+
             // if (SelectedObject == null || TabButton.ActiveButton == null)
             // {
             //     Collapse();
             // }
+        }
+
+        private void OnDirectedToggleValueChanged(bool v)
+        {
+            if (SelectedObject && SelectedObject is GTS.Edges.Edge)
+            {
+                (SelectedObject as Edges.Edge).IsDirected = v;
+            }
         }
 
         private void OnWeightTextChanged(string t)
@@ -310,6 +343,25 @@ namespace GTS.UI.Inspector {
             if (SelectedObject && SelectedObject is GTS.Edges.Edge)
             {
                 (SelectedObject as Edges.Edge).ReverseEdge();
+            }
+        }
+
+        public void ShowDijkstras()
+        {
+            var distances = DataManager.ComputeDijkstraDistances();
+            if (distances == null) return; // invalid press
+
+            foreach (var pair in distances)
+            {
+                pair.Key.DisplayDistance(true, pair.Value);
+            }
+        }
+
+        public void HideDijkstra()
+        {
+            foreach (var n in TabButton.ActiveButton.TabData.AllNodes)
+            {
+                n.DisplayDistance(false, 0);
             }
         }
     }

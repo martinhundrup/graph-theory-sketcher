@@ -17,6 +17,15 @@ namespace GTS.Edges
         [SerializeField] private Node endNode;
         [SerializeField] protected Canvas weightCanvas;
 
+        [Header("Directedness")]
+        [SerializeField] private bool isDirected = false;
+        [SerializeField] private Transform arrowHead;
+        [SerializeField] private SpriteRenderer arrowSR;
+
+        // How far back from the node center to place the arrow,
+        // in units of endNode's lossyScale.x (tweak in inspector)
+        [SerializeField] private float arrowOffsetMultiplier = 0.5f;
+
 
         public Node StartNode => startNode;
         public Node EndNode   => endNode;
@@ -43,21 +52,36 @@ namespace GTS.Edges
             set;
         } = 0;
 
-        public void ReverseEdge()
+        /// <summary>
+        /// Public property for directedness. When toggled,
+        /// the arrow visual is updated immediately.
+        /// </summary>
+        public bool IsDirected
         {
-            var t = StartNode;
-            startNode = endNode;
-            endNode = t;
+            get => isDirected;
+            set
+            {
+                if (isDirected == value) return;
+                isDirected = value;
+                UpdateArrowVisual();
+            }
         }
 
+        public void ReverseEdge()
+        {
+            var t = startNode;
+            startNode = endNode;
+            endNode = t;
+
+            // After reversing, update geometry + arrow
+            UpdateLineImmediate();
+        }
 
         private LineRenderer lr;
         private EdgeCollider2D edgeCollider;
 
-        // private const float scaleModifier = 0.1f;
-
         // -------------------------------------------------------
-        // New: hook into ToolManager so we can toggle collider
+        // Hook into ToolManager so we can toggle collider
         // -------------------------------------------------------
         private void OnEnable()
         {
@@ -72,7 +96,7 @@ namespace GTS.Edges
 
         private void HandleToolChanged(Tool tool)
         {
-            // Edges should only be "clickable" when Trash is active
+            // Edges should be "clickable" when Trash or Select is active
             if (edgeCollider != null)
             {
                 edgeCollider.enabled = (tool == Tool.Trash || tool == Tool.Select);
@@ -123,10 +147,12 @@ namespace GTS.Edges
             SetLabel("");
             SetWeight("");
             Inspector.ObjectSelected(this);
+            Node.ScaleChanged += CheckUpdateArrowOnNodeScaleChanged;
         }
 
         private void OnDestroy()
         {
+            base.OnDestroy();
             if (startNode)
             {
                 startNode.Destroyed -= NodeDeleted;
@@ -137,6 +163,7 @@ namespace GTS.Edges
             }
 
             Destroyed?.Invoke(this);
+            Node.ScaleChanged -= CheckUpdateArrowOnNodeScaleChanged;
         }
 
         public void SetWeight(string t)
@@ -154,16 +181,20 @@ namespace GTS.Edges
             weightCanvas.gameObject.SetActive(true);
         }
 
-        override public void SetColor(Color c)
+        public override void SetColor(Color c)
         {
             base.SetColor(c);
-            lr.startColor = lr.endColor = color;
+            if (lr != null)
+            {
+                lr.startColor = lr.endColor = color;
+            }
+            arrowSR.color = c;
         }
 
         new protected void OnMouseDown()
         {
             base.OnMouseDown();
-            // Only ever reachable if edgeCollider.enabled == true (Trash tool)
+            // Only ever reachable if edgeCollider.enabled == true
             if (ToolManager.ActiveTool == Tool.Trash)
             {
                 Destroy(gameObject);
@@ -194,6 +225,12 @@ namespace GTS.Edges
             {
                 // Thickness for hitbox; tweak as needed
                 edgeCollider.edgeRadius = scale * 0.5f * scaleModifier;
+            }
+
+            // Optional: scale arrow with edge thickness
+            if (arrowHead != null)
+            {
+                arrowHead.localScale = Vector3.one * (scale * 3f);
             }
         }
 
@@ -239,8 +276,7 @@ namespace GTS.Edges
                 lr.SetPosition(1, endNode.transform.position + Vector3.forward);
             }
 
-            UpdateLabelPosition();
-            UpdateCollider();
+            UpdateVisuals();
         }
 
         // Called when we need an immediate update after creating / reassigning endpoints
@@ -252,8 +288,15 @@ namespace GTS.Edges
             lr.SetPosition(0, startNode.transform.position + Vector3.forward);
             lr.SetPosition(1, endNode.transform.position + Vector3.forward);
 
+            UpdateVisuals();
+        }
+
+        private void UpdateVisuals()
+        {
+            UpdateSelectedArrowPosition();
             UpdateLabelPosition();
             UpdateCollider();
+            UpdateArrowVisual();
         }
 
         private void UpdateCollider()
@@ -268,6 +311,21 @@ namespace GTS.Edges
             edgeCollider.points = new Vector2[] { p0, p1 };
         }
 
+        private void UpdateSelectedArrowPosition()
+        {
+            Vector3 mid = (startNode.transform.position + endNode.transform.position) * 0.5f;
+
+            // Keep original Z so it stays on the right canvas/sorting plane
+            mid.z = label.transform.position.z;
+
+            label.transform.position = mid;
+
+            if (selectedArrow != null)
+            {
+                selectedArrow.transform.position = mid + Vector3.up * 0.5f;
+            }
+        }
+
         private void UpdateLabelPosition()
         {
             if (label == null || startNode == null || endNode == null)
@@ -279,7 +337,55 @@ namespace GTS.Edges
             mid.z = label.transform.position.z;
 
             label.transform.position = mid;
-            weightCanvas.transform.position = mid + Vector3.down * 0.5f;
+
+            if (weightCanvas != null)
+            {
+                weightCanvas.transform.position = mid + Vector3.down * 0.5f;
+            }
+        }
+
+        private void CheckUpdateArrowOnNodeScaleChanged(Node node)
+        {
+            if (node == endNode)
+            {
+                UpdateArrowVisual();
+            }
+        }
+
+        /// <summary>
+        /// Update the arrowhead to visually represent directedness
+        /// from startNode -> endNode.
+        /// </summary>
+        private void UpdateArrowVisual()
+        {
+            if (arrowHead == null)
+                return;
+
+            if (!isDirected || startNode == null || endNode == null)
+            {
+                arrowHead.gameObject.SetActive(false);
+                return;
+            }
+
+            arrowHead.gameObject.SetActive(true);
+
+            // Base positions (same layer as line)
+            Vector3 a = startNode.transform.position + Vector3.forward;
+            Vector3 b = endNode.transform.position + Vector3.forward;
+
+            Vector3 dir = (b - a).normalized;
+            if (dir.sqrMagnitude <= 0.0001f)
+                return;
+
+            // Offset distance based on end node's scale
+            float nodeScale = endNode.Scale * 10;
+            float offset = nodeScale * arrowOffsetMultiplier;
+
+            // Move the arrow back along the line so it's at the node's edge
+            arrowHead.position = b - dir * offset;
+
+            // 2D: Z-forward, 'up' points along the edge direction
+            arrowHead.rotation = Quaternion.LookRotation(Vector3.forward, dir);
         }
 
     }

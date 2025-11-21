@@ -138,26 +138,26 @@ public class TabData
         }
     }
 
-        public void SaveJson(string filePath)
-        {
-            if (string.IsNullOrEmpty(filePath))
-            {
-                Debug.LogError("TabData.SaveJsonToFile: filePath is null or empty");
-                return;
-            }
+        // public void SaveJson(string filePath)
+        // {
+        //     if (string.IsNullOrEmpty(filePath))
+        //     {
+        //         Debug.LogError("TabData.SaveJsonToFile: filePath is null or empty");
+        //         return;
+        //     }
 
-            // If user didn’t type an extension, force .gts
-            string ext = Path.GetExtension(filePath);
-            if (string.IsNullOrEmpty(ext))
-            {
-                filePath += ".gts";
-            }
+        //     // If user didn’t type an extension, force .gts
+        //     string ext = Path.GetExtension(filePath);
+        //     if (string.IsNullOrEmpty(ext))
+        //     {
+        //         filePath += ".gts";
+        //     }
 
-            File.WriteAllText(filePath, ToJSON());
-            Debug.Log($"Tab saved to {filePath}");
-        }
+        //     File.WriteAllText(filePath, ToJSON());
+        //     Debug.Log($"Tab saved to {filePath}");
+        // }
 
-        private string ToJSON()
+        public string ToJSON()
         {
             var data = new TabSaveData
             {

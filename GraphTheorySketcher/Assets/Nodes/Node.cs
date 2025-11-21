@@ -13,9 +13,11 @@ using System.IO;  // <-- to access EdgePlacer
 namespace GTS.Nodes {
     public class Node : GraphObject
     {
+        public static event Action<Node> ScaleChanged;
         public event Action<Node> Destroyed;
         private SpriteRenderer sr;
         private CircleCollider2D circleCollider2D;
+        [SerializeField] private GameObject distances;
 
         // Dragging
         private bool isDragging = false;
@@ -64,6 +66,7 @@ namespace GTS.Nodes {
             SetLabel("");
             SetScale(0.1f);
             GTS.UI.Inspector.Inspector.ObjectSelected(this);
+            distances.SetActive(false);
         }
 
         public void SetUID(ulong uid)
@@ -73,6 +76,7 @@ namespace GTS.Nodes {
 
         private void OnDestroy()
         {
+            base.OnDestroy();
             Destroyed?.Invoke(this);
         }
 
@@ -81,6 +85,7 @@ namespace GTS.Nodes {
             base.SetScale(s);
             circleCollider2D.radius = scale * scaleModifier / 2f;
             sr.gameObject.transform.localScale = Vector3.one * scale * scaleModifier;
+            ScaleChanged?.Invoke(this);
         }
 
         override public void SetColor(Color c)
@@ -203,6 +208,17 @@ namespace GTS.Nodes {
             this.SetLabel(st.label);
             this.UID = st.uid;
             this.transform.position = st.position;
+        }
+
+        public void DisplayDistance(bool active, int dist)
+        {
+            distances.SetActive(active);
+            if (dist == int.MaxValue || dist == int.MinValue)
+            {
+                distances.GetComponentInChildren<TextMeshProUGUI>().text = $"distance: inf.";
+                return;
+            }
+            distances.GetComponentInChildren<TextMeshProUGUI>().text = $"distance: {dist}";
         }
     }
 }
