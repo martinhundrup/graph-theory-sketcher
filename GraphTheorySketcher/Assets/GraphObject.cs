@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using GTS.Tools;
+using GTS.UI;
 using GTS.UI.Inspector;
 using TMPro;
 using UnityEngine;
@@ -40,11 +41,13 @@ namespace GTS{
             label = GetComponentInChildren<Canvas>();
             text = GetComponentInChildren<TextMeshProUGUI>();
             Inspector.OnObjectSelected += OnSelected;
+            Stats.UpdateStats();
         }
 
         protected void OnDestroy()
         {
             Inspector.OnObjectSelected -= OnSelected;
+            Stats.UpdateStats();
         }
 
         protected void OnSelected(GraphObject obj)

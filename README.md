@@ -7,13 +7,13 @@ Final project for CPT_S/MATH 453 at Washington State University
 The user will be able to create different tabs, in which a single tab is a workspace for a single graph.
 Tabs will consists of an editable name.
 
-### Saving - Status: In Progress
+### Saving - Status: Completed
 The user will be able to save and load tabs.
 
 ### Creating Nodes - Status: Completed
 The user will be able to create nodes easily.
 
-### Labeling Nodes - Status: In Progress
+### Labeling Nodes - Status: Completed
 The user will be able to attach labels to nodes
 
 ### Moving Nodes - Status: Completed
@@ -35,13 +35,13 @@ The user will be able to scale the size of edges and nodes.
 The user will be able to add and remove curves to edges by click on them
 and selecting a bezier curve point halfway along the edge
 
-### Edge Types - Status: Planned
+### Edge Types - Status: Completed
 The user will be able to toggle directedness of edges.
 
-### Edge Weights - Status: Planned
+### Edge Weights - Status: Completed
 The user will be able to give weights to edges.
 
-### Toggling Labels - Status: Planned
+### Toggling Labels - Status: Completed
 The user will be able to toggle the visibility of all edge and node labels.
 
 ### Coloring Nodes - Status: Completed
@@ -50,13 +50,13 @@ The user will be able to give a node a unique color
 ### Coloring Edges - Status: Completed
 The user will be able to give edges a unique color
 
-### Stats - Status: Planned
+### Stats - Status: Completed
 There will be a HUD with the following stats visible at any time:
     * n - the number of vertices
     * m - the number of edges
     * k - the number of components
 
-### Dijkstra's - Status: Planned
+### Dijkstra's - Status: Completed
 The user will be able to select any node, and see it's distance to any other node.
 
 ### Shortest Path - Status: Planned

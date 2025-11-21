@@ -150,7 +150,7 @@ namespace GTS.Edges
             Node.ScaleChanged += CheckUpdateArrowOnNodeScaleChanged;
         }
 
-        private void OnDestroy()
+        new private void OnDestroy()
         {
             base.OnDestroy();
             if (startNode)
