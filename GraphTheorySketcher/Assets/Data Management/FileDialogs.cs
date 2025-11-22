@@ -73,7 +73,7 @@ namespace GTS
         private static void SaveTextWeb(string defaultName, string text, string mimeType = "application/json")
         {
             if (string.IsNullOrEmpty(defaultName))
-                defaultName = "graph.gts";
+                defaultName = "graph.sog";
 
             if (text == null)
                 text = string.Empty;
@@ -81,7 +81,7 @@ namespace GTS
             DownloadFile(defaultName, mimeType, text);
         }
 
-        private static void LoadTextWeb(Action<string> callback, string acceptExtensions = ".gts,.json,.txt")
+        private static void LoadTextWeb(Action<string> callback, string acceptExtensions = ".sog,.json,.txt")
         {
             if (callback == null)
             {
@@ -132,7 +132,7 @@ namespace GTS
                 "Save Graph",
                 Application.dataPath,
                 defaultName,
-                "gts"
+                "sog"
             );
 
             if (string.IsNullOrEmpty(path))
@@ -174,12 +174,12 @@ namespace GTS
             }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-            LoadTextWeb(onLoaded, ".gts,.json,.txt");
+            LoadTextWeb(onLoaded, ".sog,.json,.txt");
 #elif UNITY_EDITOR
             string path = UnityEditor.EditorUtility.OpenFilePanel(
                 "Load Graph",
                 Application.dataPath,
-                "gts"
+                "sog"
             );
 
             if (string.IsNullOrEmpty(path))

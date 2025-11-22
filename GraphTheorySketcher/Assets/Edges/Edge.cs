@@ -148,6 +148,7 @@ namespace GTS.Edges
             SetWeight("");
             Inspector.ObjectSelected(this);
             Node.ScaleChanged += CheckUpdateArrowOnNodeScaleChanged;
+            this.transform.position = this.transform.position + Vector3.forward * 10; // for collision ordering
         }
 
         new private void OnDestroy()
@@ -272,8 +273,8 @@ namespace GTS.Edges
 
             if (lr != null)
             {
-                lr.SetPosition(0, startNode.transform.position + Vector3.forward);
-                lr.SetPosition(1, endNode.transform.position + Vector3.forward);
+                lr.SetPosition(0, startNode.transform.position + Vector3.forward + Vector3.forward);
+                lr.SetPosition(1, endNode.transform.position + Vector3.forward + Vector3.forward);
             }
 
             UpdateVisuals();

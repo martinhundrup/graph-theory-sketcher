@@ -62,7 +62,7 @@ namespace GTS.UI.Tabs {
 
         public void SetText(string t)
         {
-            text.text = t + ".gts";
+            text.text = t + ".sog";
             TabData.SetLabel(text.text);
         }
 
