@@ -11,6 +11,7 @@ namespace GTS.UI {
         private Button button;
         [SerializeField] private Tool tool;
         [SerializeField] private bool startSelected = false;
+        [SerializeField] private Sprite toolSprite;
         
         private void Awake()
         {
@@ -24,7 +25,6 @@ namespace GTS.UI {
         private void Start()
         {
             if (startSelected) ButtonListener();
-            
         }
 
         private void OnDestroy()
@@ -42,6 +42,7 @@ namespace GTS.UI {
             if (tool == t)
             {
                 backgroundImage.color = Color.white;
+                CustomCursor.Instance.SetCursor(toolSprite);
                 return;
             }
 
