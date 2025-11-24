@@ -335,13 +335,13 @@ namespace GTS.Edges
             Vector3 mid = (startNode.transform.position + endNode.transform.position) * 0.5f;
 
             // Keep original Z so it stays on the right canvas/sorting plane
-            mid.z = label.transform.position.z;
+            mid.z = 1;
 
             label.transform.position = mid;
 
             if (weightCanvas != null)
             {
-                weightCanvas.transform.position = mid + Vector3.down * 0.5f;
+                weightCanvas.transform.position = mid + Vector3.down * 0.5f + Vector3.back;
             }
         }
 
